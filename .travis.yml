@@ -1,0 +1,8 @@
+language: ruby
+rvm:
+  - 2.4
+bundler_args: --deployment
+cache: bundler
+dist: xenial
+services:
+  - rabbitmq
