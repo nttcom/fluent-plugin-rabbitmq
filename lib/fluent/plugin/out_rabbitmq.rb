@@ -14,7 +14,7 @@
 #    limitations under the License.
 #
 #
-require "fluent/output"
+require "fluent/plugin/output"
 
 module Fluent::Plugin
   class RabbitMQOutput < Output
@@ -70,6 +70,7 @@ module Fluent::Plugin
 
     def configure(conf)
       compat_parameters_convert(conf, :inject, :formatter, default_chunk_key: "time")
+
       super
 
       bunny_options = {}

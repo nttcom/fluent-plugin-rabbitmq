@@ -14,7 +14,7 @@
 #    limitations under the License.
 #
 #
-require "fluent/input"
+require "fluent/plugin/input"
 
 module Fluent::Plugin
   class RabbitMQInput < Input
