@@ -110,6 +110,10 @@ module Fluent::Plugin
       @formatter = formatter_create
     end
 
+    def multi_workers_ready?
+      true
+    end
+
     def start
       super
       @bunny.start
