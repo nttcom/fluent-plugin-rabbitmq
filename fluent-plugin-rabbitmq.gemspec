@@ -23,5 +23,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "fluentd", ">= 0.14.0"
 
-  spec.add_dependency "bunny", "~> 2.7.0"
+  spec.add_dependency "bunny", "~> 2.9.2"
 end
