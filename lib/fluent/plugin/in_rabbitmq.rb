@@ -114,7 +114,11 @@ module Fluent::Plugin
       end
       queue.subscribe do |delivery_info, properties, payload|
         @parser.parse(payload) do |time, record|
-          time = properties[:timestamp] || time
+          time = if properties[:timestamp]
+                    Fluent::EventTime.from_time(properties[:timestamp])
+                 else
+                    time
+                 end
           router.emit(@tag, time, record)
         end
       end

@@ -113,6 +113,21 @@ class RabbitMQInputTest < Test::Unit::TestCase
     end
   end
 
+  def test_emit_with_timestamp
+    d = create_driver
+
+    expect_time = Fluent::EventTime.parse("2018-08-15 13:14:15 UTC")
+    expect_hash = {"foo" => "bar"}
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish(expect_hash.to_json, timestamp: expect_time.to_i)
+    end
+
+    d.events.each do |event|
+      assert_equal expect_time, event[1]
+      assert_equal expect_hash, event[2]
+    end
+  end
+
   def test_emit_direct
     conf = CONFIG.clone.gsub(/queue\stest_in_fanout/, "queue test_in_direct")
     d = create_driver(conf)
