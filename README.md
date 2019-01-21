@@ -46,6 +46,8 @@ fluentd >= 0.14.0
 |auto_delete|true|false|set auto_delete flag of the queue|
 |prefetch_count|10|nil||
 |consumer_pool_size|5|nil||
+|include_headers|true|false|include headers in events|
+|headers_key|string|header|key name of headers|
 
 ### Output
 

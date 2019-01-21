@@ -257,13 +257,13 @@ class RabbitMQInputTest < Test::Unit::TestCase
 
   def test_include_header
     conf = CONFIG.clone
-    conf << "\ninclude_header true\n"
+    conf << "\ninclude_headers true\n"
     d = create_driver(conf)
 
     hash = {"foo" => "bar"}
     headers = {"hoge" => "fuga"}
     expect_hash = hash.dup
-    expect_hash["header"] = headers
+    expect_hash["headers"] = headers
 
     d.run(expect_emits: 1) do
       @fanout_exchange.publish(hash.to_json, headers: {"hoge": "fuga"})
@@ -274,9 +274,9 @@ class RabbitMQInputTest < Test::Unit::TestCase
     end
   end
 
-  def test_header_key
+  def test_headers_key
     conf = CONFIG.clone
-    conf << "\ninclude_header true\nheader_key test"
+    conf << "\ninclude_headers true\nheaders_key test"
     d = create_driver(conf)
 
     hash = {"foo" => "bar"}

@@ -60,8 +60,8 @@ module Fluent::Plugin
 
     config_param :prefetch_count, :integer, default: nil
 
-    config_param :include_header, :bool, default: false
-    config_param :header_key, :string, default: "header"
+    config_param :include_headers, :bool, default: false
+    config_param :headers_key, :string, default: "headers"
 
     def initialize
       super
@@ -122,8 +122,8 @@ module Fluent::Plugin
                  else
                     time
                  end
-          if @include_header
-            record[@header_key] = properties.headers
+          if @include_headers
+            record[@headers_key] = properties.headers
           end
           router.emit(@tag, time, record)
         end
