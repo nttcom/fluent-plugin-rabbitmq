@@ -254,4 +254,42 @@ class RabbitMQInputTest < Test::Unit::TestCase
       assert_equal expect_hash, event[2]
     end
   end
+
+  def test_include_header
+    conf = CONFIG.clone
+    conf << "\ninclude_header true\n"
+    d = create_driver(conf)
+
+    hash = {"foo" => "bar"}
+    headers = {"hoge" => "fuga"}
+    expect_hash = hash.dup
+    expect_hash["header"] = headers
+
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish(hash.to_json, headers: {"hoge": "fuga"})
+    end
+
+    d.events.each do |event|
+      assert_equal expect_hash, event[2]
+    end
+  end
+
+  def test_header_key
+    conf = CONFIG.clone
+    conf << "\ninclude_header true\nheader_key test"
+    d = create_driver(conf)
+
+    hash = {"foo" => "bar"}
+    headers = {"hoge" => "fuga"}
+    expect_hash = hash.dup
+    expect_hash["test"] = headers
+
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish(hash.to_json, headers: {"hoge": "fuga"})
+    end
+
+    d.events.each do |event|
+      assert_equal expect_hash, event[2]
+    end
+  end
 end

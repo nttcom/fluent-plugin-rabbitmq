@@ -60,6 +60,9 @@ module Fluent::Plugin
 
     config_param :prefetch_count, :integer, default: nil
 
+    config_param :include_header, :bool, default: false
+    config_param :header_key, :string, default: "header"
+
     def initialize
       super
       require "bunny"
@@ -119,6 +122,9 @@ module Fluent::Plugin
                  else
                     time
                  end
+          if @include_header
+            record[@header_key] = properties.headers
+          end
           router.emit(@tag, time, record)
         end
       end
