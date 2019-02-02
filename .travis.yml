@@ -3,5 +3,10 @@ rvm:
   - 2.6
 cache: bundler
 dist: xenial
+sudo: true
 services:
   - rabbitmq
+addons:
+  apt:
+    packages:
+      - rabbitmq-server
