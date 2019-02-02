@@ -34,6 +34,8 @@ fluentd >= 0.14.0
   <parse>
     @type json # or msgpack, ltsv, none
   </parse>
+  <buffer> # to use in buffered mode
+  </buffer>
 </source>
 ```
 
@@ -78,11 +80,13 @@ fluentd >= 0.14.0
 |persistent|true|false|messages is persistent to disk|
 |timestamp|true|false|if true, time of record is used as timestamp in AMQP message|
 |content_type|application/json|nil|message content type|
+|frame_max|131072|nil|maximum permissible size of a frame|
 |mandatory||true|nil||
 |expiration|3600|nil|message time-to-live|
 |message_type||nil||
 |priority||nil||
 |app_id||nil||
+|id_key|message_id|nil|id to specify message_id|
 
 ### TLS related configurations
 
