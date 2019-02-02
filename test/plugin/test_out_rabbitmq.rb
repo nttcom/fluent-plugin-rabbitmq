@@ -104,6 +104,23 @@ class RabbitMQOutputTest < Test::Unit::TestCase
     assert_equal(@time, properties[:timestamp].to_i)
   end
 
+  def test_id_key
+    d = create_driver(%[
+      exchange test_out_fanout
+      exchange_type fanout
+      id_key test_id
+    ])
+
+    message_id = "abc123"
+    record = {"test_id" => message_id, "foo" => "bar"}
+    d.run(default_tag: "test.test") do
+      d.feed(@time, record)
+    end
+
+    _, properties, _ = @queue.pop
+    assert_equal(message_id, properties[:message_id])
+  end
+
   def test_server_interval
     d = create_driver(%[
       exchange test
@@ -171,5 +188,25 @@ class RabbitMQOutputTest < Test::Unit::TestCase
     _, _, body = @queue.pop
     body.force_encoding("utf-8")
     assert_equal(string, body.chomp)
+  end
+
+  def test_buffered_emit
+    d = create_driver(%[
+      exchange test_out_fanout
+      exchange_type fanout
+      format json
+      timestamp true
+      <buffer>
+      </buffer>
+    ])
+
+    record = {"test_emit" => 1}
+    d.run(default_tag: "test.test") do
+      d.feed(@time, record)
+    end
+
+    _, properties, body = @queue.pop
+    assert_equal(record, JSON.parse(body))
+    assert_equal(@time, properties[:timestamp].to_i)
   end
 end

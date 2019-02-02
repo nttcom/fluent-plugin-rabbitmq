@@ -42,6 +42,7 @@ module Fluent::Plugin
       param == "server" ? :server : Integer(param)
     end
     config_param :threaded, :bool, default: true
+    config_param :frame_max, :integer, default: nil
 
     config_param :tls, :bool, default: false
     config_param :tls_cert, :string, default: nil
@@ -55,9 +56,10 @@ module Fluent::Plugin
 
     config_param :persistent, :bool, default: false
     config_param :routing_key, :string, default: nil    
+    config_param :id_key, :string, default: nil
     config_param :timestamp, :bool, default: false
     config_param :content_type, :string, default: nil
-    config_param :mandatory, :bool, default: nil
+    config_param :content_encoding, :string, default: nil
     config_param :expiration, :integer, default: nil
     config_param :message_type, :integer, default: nil
     config_param :priority, :integer, default: nil
@@ -87,8 +89,8 @@ module Fluent::Plugin
       bunny_options[:recovery_attempts] = @recovery_attempts
       bunny_options[:auth_mechanism] = @auth_mechanism if @auth_mechanism
       bunny_options[:heartbeat] = @heartbeat if @heartbeat
-      bunny_options[:threaded] = @threaded
       bunny_options[:logger] = log
+      bunny_options[:frame_max] = @frame_max if @frame_max
 
       bunny_options[:tls] = @tls
       bunny_options[:tls_cert] = @tls_cert if @tls_cert
@@ -100,6 +102,7 @@ module Fluent::Plugin
 
       @publish_options = {}
       @publish_options[:content_type] = @content_type if @content_type
+      @publish_options[:content_encoding] = @content_encoding if @content_encoding
       @publish_options[:persistent] = @persistent if @persistent
       @publish_options[:mandatory] = @mandatory if @mandatory
       @publish_options[:expiration] = @expiration if @expiration
@@ -107,11 +110,15 @@ module Fluent::Plugin
       @publish_options[:priority] = @priority if @priority
       @publish_options[:app_id] = @app_id if @app_id
 
-      @formatter = formatter_create
+      @formatter = formatter_create(default_type: @type)
     end
 
     def multi_workers_ready?
       true
+    end
+
+    def prefer_buffered_processing
+      false
     end
 
     def start
@@ -130,26 +137,37 @@ module Fluent::Plugin
       super
     end
 
-    def process(tag, es)
+    def set_publish_options(tag, time, record)
+      @publish_options[:timestamp] = time.to_i if @timestamp
+
       if @exchange_type != "fanout"
         @publish_options[:routing_key] = @routing_key ? @routing_key : tag
       end
-      es.each do |time, record|
-        @publish_options[:timestamp] = time.to_i if @timestamp
-        formatted = format(tag, time, record)
-        @bunny_exchange.publish(formatted, @publish_options)
+
+      if @id_key
+        id = record[@id_key]
+        @publish_options[:message_id] = id if id
       end
     end
 
-    def multi_workers_ready?
-      true
+    def process(tag, es)
+      es.each do |time, record|
+        set_publish_options(tag, time, record)
+        record = inject_values_to_record(tag, time, record)
+        buf = @formatter.format(tag, time, record)
+        @bunny_exchange.publish(buf, @publish_options)
+      end
     end
 
-    private
+    def write(chunk)
+      tag = chunk.metadata.tag
 
-    def format(tag, time, record)
-      record = inject_values_to_record(tag, time, record)
-      @formatter.format(tag, time, record)
+      chunk.each do |time, record|
+        set_publish_options(tag, time, record)
+        record = inject_values_to_record(tag, time, record)
+        buf = @formatter.format(tag, time, record)
+        @bunny_exchange.publish(buf, @publish_options)
+      end
     end
   end
 end
