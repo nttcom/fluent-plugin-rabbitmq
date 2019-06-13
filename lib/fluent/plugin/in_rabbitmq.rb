@@ -34,7 +34,7 @@ module Fluent::Plugin
     config_param :user, :string, default: nil
     config_param :pass, :string, default: nil, secret: true
     config_param :vhost, :string, default: nil
-    config_param :exchange, :string, default: nil
+
     config_param :routing_key, :string, default: nil
     config_param :connection_timeout, :time, default: nil
     config_param :continuation_timeout, :integer, default: nil
@@ -47,6 +47,13 @@ module Fluent::Plugin
     end
     config_param :consumer_pool_size, :integer, default: nil
 
+    config_param :exchange, :string, default: nil
+    config_param :create_exchange, :bool, default: false
+    config_param :exchange_to_bind, :string, default: nil
+    config_param :exchange_type, :string, default: "topic"
+    config_param :exchange_routing_key, :string, default: nil
+    config_param :exchange_durable, :bool, default: false
+    
     config_param :tls, :bool, default: false
     config_param :tls_cert, :string, default: nil
     config_param :tls_key, :string, default: nil
@@ -57,8 +64,7 @@ module Fluent::Plugin
     config_param :durable, :bool, default: false
     config_param :exclusive, :bool, default: false
     config_param :auto_delete, :bool, default: false
-
-    config_param :prefetch_count, :integer, default: nil
+    config_param :ttl, :integer, default: nil
 
     config_param :include_headers, :bool, default: false
     config_param :headers_key, :string, default: "headers"
@@ -106,11 +112,23 @@ module Fluent::Plugin
       @bunny.start
       channel = @bunny.create_channel(nil, @consumer_pool_size)
       channel.prefetch(@prefetch_count) if @prefetch_count
+      if @create_exchange
+        exchange_options = {
+            durable: @exchange_durable,
+            auto_delete: @auto_delete
+        }
+        @bunny_exchange = Bunny::Exchange.new(channel, @exchange_type, @exchange, exchange_options)
+        if @exchange_to_bind
+          @bunny_exchange.bind(@exchange_to_bind, routing_key: @exchange_routing_key)
+        end
+      end
+      queue_arguments = {"x-message-ttl" => @ttl} if @ttl
       queue = channel.queue(
         @queue,
         durable: @durable,
         exclusive: @exclusive,
-        auto_delete: @auto_delete
+        auto_delete: @auto_delete,
+        arguments: queue_arguments
       )
       if @exchange
         queue.bind(@exchange, routing_key: @routing_key)

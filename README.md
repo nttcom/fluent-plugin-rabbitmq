@@ -46,10 +46,16 @@ fluentd >= 0.14.0
 |durable|true|false|set durable flag of the queue|
 |exclusive|true|false|set exclusive flag of the queue|
 |auto_delete|true|false|set auto_delete flag of the queue|
+|ttl|60000|nil|queue ttl in ms|
 |prefetch_count|10|nil||
 |consumer_pool_size|5|nil||
 |include_headers|true|false|include headers in events|
 |headers_key|string|header|key name of headers|
+|create_exchange|true|false|create exchange or not|
+|exchange_to_bind|string|nil|exchange to bind created exchange|
+|exchange_type|direct|topic|type of created exchange|
+|exchange_routing_key|hoge|nil|created exchange routing key|
+|exchange_durable|true|false|durability of create exchange|
 
 ### Output
 
