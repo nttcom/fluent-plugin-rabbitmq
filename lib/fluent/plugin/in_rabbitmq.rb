@@ -64,6 +64,7 @@ module Fluent::Plugin
     config_param :durable, :bool, default: false
     config_param :exclusive, :bool, default: false
     config_param :auto_delete, :bool, default: false
+    config_param :prefetch_count, :integer, default: nil
     config_param :ttl, :integer, default: nil
 
     config_param :include_headers, :bool, default: false
