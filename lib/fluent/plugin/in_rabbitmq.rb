@@ -68,7 +68,9 @@ module Fluent::Plugin
     config_param :ttl, :integer, default: nil
 
     config_param :include_headers, :bool, default: false
+    config_param :include_delivery_info, :bool, default: false
     config_param :headers_key, :string, default: "headers"
+    config_param :delivery_info_key, :string, default: "delivery_info"
 
     def initialize
       super
@@ -143,6 +145,9 @@ module Fluent::Plugin
                  end
           if @include_headers
             record[@headers_key] = properties.headers
+          end
+          if @include_delivery_info
+            record[@delivery_info_key] = delivery_info
           end
           router.emit(@tag, time, record)
         end

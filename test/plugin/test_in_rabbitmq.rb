@@ -292,4 +292,28 @@ class RabbitMQInputTest < Test::Unit::TestCase
       assert_equal expect_hash, event[2]
     end
   end
+
+  def test_include_delivery_info
+    conf = CONFIG.clone.gsub(/queue\stest_in_fanout/, "queue test_in_topic")
+    conf << "\ninclude_delivery_info true\n"
+    d = create_driver(conf)
+
+    queue = @channel.queue("test_in_topic")
+    topic_exchange = Bunny::Exchange.new(@channel, "topic", "test_in_topic")
+    queue.bind(topic_exchange, routing_key: "test_in_topic")
+
+    delivery_info = { "exchange" => "test_in_topic", "routing_key" => "test_in_topic" }
+    expect_hash = {"foo" => "bar"}
+    expect_hash["delivery_info"] = delivery_info
+    d.run(expect_emits: 1) do
+      @topic_exchange.publish(expect_hash.to_json, routing_key: "test_in_topic")
+    end
+
+    d.events.each do |event|
+      # assert_equal expect_hash, event[2]
+      assert_equal expect_hash["foo"], event[2]["foo"]
+      assert_equal expect_hash["delivery_info"][":exchange"], event[2]["delivery_info"][":exchange"]
+      assert_equal expect_hash["delivery_info"][":routing_key"], event[2]["delivery_info"][":routing_key"]
+    end
+  end
 end
