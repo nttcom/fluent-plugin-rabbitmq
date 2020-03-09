@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-rabbitmq"
-  spec.version       = "0.0.8"
+  spec.version       = "0.0.9"
   spec.authors       = ["NTT Communications"]
   spec.email         = ["masaki.matsushita@ntt.com"]
 
@@ -23,5 +23,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "fluentd", ">= 0.14.0"
 
-  spec.add_dependency "bunny", "~> 2.14.2"
+  spec.add_dependency "bunny", "~> 2.14.4"
 end

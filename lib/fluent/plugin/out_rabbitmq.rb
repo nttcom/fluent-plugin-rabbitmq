@@ -89,7 +89,6 @@ module Fluent::Plugin
       bunny_options[:recovery_attempts] = @recovery_attempts
       bunny_options[:auth_mechanism] = @auth_mechanism if @auth_mechanism
       bunny_options[:heartbeat] = @heartbeat if @heartbeat
-      bunny_options[:logger] = log
       bunny_options[:frame_max] = @frame_max if @frame_max
 
       bunny_options[:tls] = @tls

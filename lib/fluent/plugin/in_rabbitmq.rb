@@ -96,7 +96,6 @@ module Fluent::Plugin
       bunny_options[:recovery_attempts] = @recovery_attempts
       bunny_options[:auth_mechanism] = @auth_mechanism if @auth_mechanism
       bunny_options[:heartbeat] = @heartbeat if @heartbeat
-      bunny_options[:logger] = log
 
       bunny_options[:tls] = @tls
       bunny_options[:tls_cert] = @tls_cert if @tls_cert
