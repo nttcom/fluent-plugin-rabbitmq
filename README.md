@@ -34,8 +34,6 @@ fluentd >= 0.14.0
   <parse>
     @type json # or msgpack, ltsv, none
   </parse>
-  <buffer> # to use in buffered mode
-  </buffer>
 </source>
 ```
 
@@ -76,6 +74,8 @@ fluentd >= 0.14.0
   <format>
     @type json # or msgpack, ltsv, none
   </format>
+  <buffer> # to use in buffered mode
+  </buffer>
 </match>
 ```
 
