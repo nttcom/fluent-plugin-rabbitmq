@@ -61,7 +61,7 @@ module Fluent::Plugin
     config_param :content_type, :string, default: nil
     config_param :content_encoding, :string, default: nil
     config_param :expiration, :integer, default: nil
-    config_param :message_type, :integer, default: nil
+    config_param :message_type, :string, default: nil
     config_param :priority, :integer, default: nil
     config_param :app_id, :string, default: nil
 
@@ -105,7 +105,7 @@ module Fluent::Plugin
       @publish_options[:persistent] = @persistent if @persistent
       @publish_options[:mandatory] = @mandatory if @mandatory
       @publish_options[:expiration] = @expiration if @expiration
-      @publish_options[:message_type] = @message_type if @message_type
+      @publish_options[:type] = @message_type if @message_type
       @publish_options[:priority] = @priority if @priority
       @publish_options[:app_id] = @app_id if @app_id
 
