@@ -316,4 +316,18 @@ class RabbitMQInputTest < Test::Unit::TestCase
       assert_equal expect_hash["delivery_info"][":routing_key"], event[2]["delivery_info"][":routing_key"]
     end
   end
+
+  def test_manual_ack
+    conf = CONFIG.clone
+    conf << "\nmanual_ack true"
+    d = create_driver(conf)
+    expect_hash = {"foo" => "bar"}
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish(expect_hash.to_json)
+    end
+
+    d.events.each do |event|
+      assert_equal expect_hash, event[2]
+    end
+  end
 end

@@ -71,6 +71,7 @@ module Fluent::Plugin
     config_param :include_delivery_info, :bool, default: false
     config_param :headers_key, :string, default: "headers"
     config_param :delivery_info_key, :string, default: "delivery_info"
+    config_param :manual_ack, :bool, default: false
 
     def initialize
       super
@@ -135,7 +136,7 @@ module Fluent::Plugin
       if @exchange
         queue.bind(@exchange, routing_key: @routing_key)
       end
-      queue.subscribe do |delivery_info, properties, payload|
+      queue.subscribe(manual_ack: @manual_ack) do |delivery_info, properties, payload|
         @parser.parse(payload) do |time, record|
           time = if properties[:timestamp]
                     Fluent::EventTime.from_time(properties[:timestamp])
@@ -150,6 +151,7 @@ module Fluent::Plugin
           end
           router.emit(@tag, time, record)
         end
+        channel.ack(delivery_info.delivery_tag) if @manual_ack
       end
     end
     
