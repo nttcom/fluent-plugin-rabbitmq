@@ -1,7 +1,5 @@
 # fluent-plugin-rabbitmq
 
-[![Build Status](https://travis-ci.org/nttcom/fluent-plugin-rabbitmq.svg?branch=master)](https://travis-ci.org/nttcom/fluent-plugin-rabbitmq)
-
 ## Overview
 
 This repository includes input/output plugins for RabbitMQ.
