@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-rabbitmq"
-  spec.version       = "0.0.9"
+  spec.version       = "0.1.0"
   spec.authors       = ["NTT Communications"]
   spec.email         = ["masaki.matsushita@ntt.com"]
 
