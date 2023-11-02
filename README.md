@@ -12,6 +12,11 @@ fluentd >= 0.14.0
 
     $ fluent-gem install fluent-plugin-rabbitmq
 
+## Testing
+
+    $ rabbitmq-server
+    $ rake test
+
 ## Configuration
 
 ### Input
