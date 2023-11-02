@@ -96,6 +96,7 @@ module Fluent::Plugin
       bunny_options[:tls_key] = @tls_key if @tls_key
       bunny_options[:tls_ca_certificates] = @tls_ca_certificates if @tls_ca_certificates
       bunny_options[:verify_peer] = @verify_peer
+      bunny_options[:logger] = log
 
       @bunny = Bunny.new(bunny_options)
 
