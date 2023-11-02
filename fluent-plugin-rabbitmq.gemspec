@@ -24,4 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "fluentd", ">= 0.14.0"
 
   spec.add_dependency "bunny", "~> 2.14.4"
+
+  spec.metadata = { "github_repo" => "ssh://github.com/nttcom/fluent-plugin-rabbitmq" }
 end
