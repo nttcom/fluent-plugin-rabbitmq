@@ -41,7 +41,6 @@ module Fluent::Plugin
     config_param :heartbeat, default: nil do |param|
       param == "server" ? :server : Integer(param)
     end
-    config_param :threaded, :bool, default: true
     config_param :frame_max, :integer, default: nil
 
     config_param :tls, :bool, default: false
