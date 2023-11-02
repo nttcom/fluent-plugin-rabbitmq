@@ -72,6 +72,7 @@ module Fluent::Plugin
     config_param :headers_key, :string, default: "headers"
     config_param :delivery_info_key, :string, default: "delivery_info"
     config_param :manual_ack, :bool, default: false
+    config_param :queue_mode, :string, default: nil
 
     def initialize
       super
@@ -125,7 +126,9 @@ module Fluent::Plugin
           @bunny_exchange.bind(@exchange_to_bind, routing_key: @exchange_routing_key)
         end
       end
-      queue_arguments = {"x-message-ttl" => @ttl} if @ttl
+      queue_arguments = {}
+      queue_arguments["x-message-ttl"] = @ttl if @ttl
+      queue_arguments["x-queue-mode"] = @queue_mode if @queue_mode
       queue = channel.queue(
         @queue,
         durable: @durable,
