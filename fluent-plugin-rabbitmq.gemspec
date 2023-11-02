@@ -1,4 +1,4 @@
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
@@ -15,15 +15,15 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ["lib"]
 
+  spec.required_ruby_version = ">= 2.5"
+
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "test-unit"
   spec.add_development_dependency "ltsv"
   spec.add_development_dependency "msgpack"
 
-  spec.add_runtime_dependency "fluentd", ">= 0.14.0"
+  spec.add_runtime_dependency "fluentd", ">= 1.0.0"
 
   spec.add_dependency "bunny", "~> 2.14.4"
-
-  spec.metadata = { "github_repo" => "ssh://github.com/nttcom/fluent-plugin-rabbitmq" }
 end
