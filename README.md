@@ -59,6 +59,8 @@ fluentd >= 0.14.0
 |exchange_durable|true|false|durability of create exchange|
 |manual_ack|true|false|manual ACK|
 |queue_mode|"lazy"|nil|queue mode|
+|queue_type|"quorum"|nil|queue type|
+
 
 ### Output
 

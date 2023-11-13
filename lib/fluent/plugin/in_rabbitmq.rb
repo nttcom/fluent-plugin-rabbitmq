@@ -73,6 +73,7 @@ module Fluent::Plugin
     config_param :delivery_info_key, :string, default: "delivery_info"
     config_param :manual_ack, :bool, default: false
     config_param :queue_mode, :string, default: nil
+    config_param :queue_type, :string, default: nil
 
     def initialize
       super
@@ -130,6 +131,7 @@ module Fluent::Plugin
       queue_arguments = {}
       queue_arguments["x-message-ttl"] = @ttl if @ttl
       queue_arguments["x-queue-mode"] = @queue_mode if @queue_mode
+      queue_arguments["x-queue-type"] = @queue_type if @queue_type
       queue = channel.queue(
         @queue,
         durable: @durable,
