@@ -139,7 +139,7 @@ module Fluent::Plugin
       @publish_options[:timestamp] = time.to_i if @timestamp
 
       if @exchange_type != "fanout"
-        @publish_options[:routing_key] = @routing_key ? @routing_key : tag
+        @publish_options[:routing_key] = @routing_key || tag
       end
 
       if @id_key
