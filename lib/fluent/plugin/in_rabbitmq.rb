@@ -142,21 +142,26 @@ module Fluent::Plugin
         queue.bind(@exchange, routing_key: @routing_key)
       end
       queue.subscribe(manual_ack: @manual_ack) do |delivery_info, properties, payload|
-        @parser.parse(payload) do |time, record|
-          time = if properties[:timestamp]
-                    Fluent::EventTime.from_time(properties[:timestamp])
-                 else
-                    time
-                 end
-          if @include_headers
-            record[@headers_key] = properties.headers
+        begin
+          @parser.parse(payload) do |time, record|
+            time = if properties[:timestamp]
+                     Fluent::EventTime.from_time(properties[:timestamp])
+                   else
+                     time
+                   end
+            if @include_headers
+              record[@headers_key] = properties.headers
+            end
+            if @include_delivery_info
+              record[@delivery_info_key] = delivery_info
+            end
+            router.emit(@tag, time, record)
           end
-          if @include_delivery_info
-            record[@delivery_info_key] = delivery_info
-          end
-          router.emit(@tag, time, record)
+        rescue Fluent::Plugin::Parser::ParserError => e
+          log.error "Parser error: #{e.message}", error: e, payload: payload, tag: @tag
+        ensure
+          channel.ack(delivery_info.delivery_tag) if @manual_ack
         end
-        channel.ack(delivery_info.delivery_tag) if @manual_ack
       end
     end
     
