@@ -52,6 +52,7 @@ module Fluent::Plugin
     config_param :exchange, :string
     config_param :exchange_type, :string
     config_param :exchange_durable, :bool, default: false
+    config_param :exchange_no_declare, :bool, default: false
 
     config_param :persistent, :bool, default: false
     config_param :routing_key, :string, default: nil    
@@ -125,7 +126,8 @@ module Fluent::Plugin
       @channel = @bunny.create_channel
       exchange_options = {
         durable: @exchange_durable,
-        auto_delete: @exchange_auto_delete
+        auto_delete: @exchange_auto_delete,
+        no_declare: @exchange_no_declare
       }
       @bunny_exchange = Bunny::Exchange.new(@channel, @exchange_type, @exchange, exchange_options)
     end
