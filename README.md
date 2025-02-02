@@ -57,6 +57,7 @@ fluentd >= 0.14.0
 |exchange_type|direct|topic|type of created exchange|
 |exchange_routing_key|hoge|nil|created exchange routing key|
 |exchange_durable|true|false|durability of create exchange|
+|exchange_no_declare|true|false|passive declare option for exchange|
 |manual_ack|true|false|manual ACK|
 |queue_mode|"lazy"|nil|queue mode|
 |queue_type|"quorum"|nil|queue type|
