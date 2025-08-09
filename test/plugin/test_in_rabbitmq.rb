@@ -255,7 +255,7 @@ class RabbitMQInputTest < Test::Unit::TestCase
     end
   end
 
-  def test_include_header
+  def test_include_headers
     conf = CONFIG.clone
     conf << "\ninclude_headers true\n"
     d = create_driver(conf)
@@ -266,7 +266,24 @@ class RabbitMQInputTest < Test::Unit::TestCase
     expect_hash["headers"] = headers
 
     d.run(expect_emits: 1) do
-      @fanout_exchange.publish(hash.to_json, headers: {"hoge": "fuga"})
+      @fanout_exchange.publish(hash.to_json, headers: headers)
+    end
+
+    d.events.each do |event|
+      assert_equal expect_hash, event[2]
+    end
+  end
+
+  def test_include_headers_without_payload
+    conf = CONFIG.clone
+    conf << "\ninclude_headers true\n"
+    d = create_driver(conf)
+
+    headers = {"hoge" => "fuga"}
+    expect_hash = {"headers" => headers}
+
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish("", headers: headers)
     end
 
     d.events.each do |event|

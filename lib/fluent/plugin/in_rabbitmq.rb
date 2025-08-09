@@ -149,6 +149,7 @@ module Fluent::Plugin
                    else
                      time
                    end
+            record ||= {}
             if @include_headers
               record[@headers_key] = properties.headers
             end
