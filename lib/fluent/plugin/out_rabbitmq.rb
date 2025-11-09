@@ -115,8 +115,6 @@ module Fluent::Plugin
       @formatter = formatter_create(default_type: @type)
 
       @use_evaluated_routing_key = @routing_key && @routing_key.match?(PLACEHOLDER_REGEX)
-
-      #put "[INFO] RabbitMQ Output plugin configured. routing_key=#{routing_key}, use_evaluated_routing_key=#{use_evaluated_routing_key}"
     end
 
     def multi_workers_ready?
