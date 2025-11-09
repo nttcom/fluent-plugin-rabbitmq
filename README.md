@@ -77,7 +77,7 @@ fluentd >= 0.14.0
   exchange foo # required: name of exchange
   exchange_type fanout # required: type of exchange e.g. topic, direct
   exchange_durable false
-  routing_key hoge # if not specified, the tag is used
+  routing_key hoge # if not specified, the tag is used. You can use placeholders like ${tag}, ${time}, ${record["key"]} here.
   heartbeat 10 # integer as seconds or :server (interval specified by server)
   <format>
     @type json # or msgpack, ltsv, none
