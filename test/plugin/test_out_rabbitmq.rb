@@ -209,4 +209,24 @@ class RabbitMQOutputTest < Test::Unit::TestCase
     assert_equal(record, JSON.parse(body))
     assert_equal(@time, properties[:timestamp].to_i)
   end
+  
+  def test_dynamic_routing_key_from_record
+    d = create_driver(%[
+      exchange test_out_dynamic
+      exchange_type topic
+      routing_key test_out_dynamic.${record["build_id"]}
+    ])
+
+    queue = @channel.queue("test_out_dynamic_123")
+    topic_exchange = Bunny::Exchange.new(@channel, "topic", "test_out_dynamic")
+    queue.bind(topic_exchange, routing_key: "test_out_dynamic.123")
+
+    record = {"build_id" => "123", "msg" => "hello dynamic"}
+    d.run(default_tag: "app.build") do
+      d.feed(@time, record)
+    end
+
+    _, _, body = queue.pop
+    assert_equal(record, JSON.parse(body))
+  end
 end
