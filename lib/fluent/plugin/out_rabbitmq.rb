@@ -20,7 +20,10 @@ module Fluent::Plugin
   class RabbitMQOutput < Output
     Fluent::Plugin.register_output("rabbitmq", self)
 
-    helpers :formatter, :inject, :compat_parameters
+    helpers :formatter, :inject, :compat_parameters, :event_emitter
+
+    PLACEHOLDER_RECORD = /\$\{record\["([^"]+)"\]\}/.freeze
+    PLACEHOLDER_REGEX  = /\$\{[^}]+\}/.freeze
 
     config_section :format do
       config_set_default :@type, "json"
@@ -110,6 +113,8 @@ module Fluent::Plugin
       @publish_options[:app_id] = @app_id if @app_id
 
       @formatter = formatter_create(default_type: @type)
+
+      @use_evaluated_routing_key = @routing_key && @routing_key.match?(PLACEHOLDER_REGEX)
     end
 
     def multi_workers_ready?
@@ -137,12 +142,11 @@ module Fluent::Plugin
       super
     end
 
-    def set_publish_options(tag, time, record)
+    def set_publish_options(tag, time, record, chunk=nil)
+      rk = resolve_routing_key(tag, time, record, chunk)
+      
       @publish_options[:timestamp] = time.to_i if @timestamp
-
-      if @exchange_type != "fanout"
-        @publish_options[:routing_key] = @routing_key || tag
-      end
+      @publish_options[:routing_key] = rk if @exchange_type != "fanout"
 
       if @id_key
         id = record[@id_key]
@@ -163,11 +167,29 @@ module Fluent::Plugin
       tag = chunk.metadata.tag
 
       chunk.each do |time, record|
-        set_publish_options(tag, time, record)
+        set_publish_options(tag, time, record, chunk)
         record = inject_values_to_record(tag, time, record)
         buf = @formatter.format(tag, time, record)
         @bunny_exchange.publish(buf, @publish_options)
       end
+    end
+
+    def resolve_routing_key(tag, time, record, chunk=nil)
+      return @routing_key || tag unless @use_evaluated_routing_key
+
+      if chunk
+        extract_placeholders(@routing_key, chunk)
+      else
+        expand_placeholders_runtime(@routing_key, tag, time, record)
+      end
+    end
+
+    def expand_placeholders_runtime(str, tag, time, record)
+      s = str.dup
+      s.gsub!('${tag}', tag.to_s)
+      s.gsub!('${time}', time.to_i.to_s)
+      s.gsub!(PLACEHOLDER_RECORD) { record[$1] ? record[$1].to_s : "" }
+      s
     end
   end
 end
