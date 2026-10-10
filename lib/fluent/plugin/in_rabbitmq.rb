@@ -53,6 +53,7 @@ module Fluent::Plugin
     config_param :exchange_type, :string, default: "topic"
     config_param :exchange_routing_key, :string, default: nil
     config_param :exchange_durable, :bool, default: false
+    config_param :exchange_no_declare, :bool, default: false
     
     config_param :tls, :bool, default: false
     config_param :tls_cert, :string, default: nil
@@ -64,6 +65,7 @@ module Fluent::Plugin
     config_param :durable, :bool, default: false
     config_param :exclusive, :bool, default: false
     config_param :auto_delete, :bool, default: false
+    config_param :queue_no_declare, :bool, default: false
     config_param :prefetch_count, :integer, default: nil
     config_param :ttl, :integer, default: nil
 
@@ -122,7 +124,8 @@ module Fluent::Plugin
       if @create_exchange
         exchange_options = {
             durable: @exchange_durable,
-            auto_delete: @auto_delete
+            auto_delete: @auto_delete,
+            no_declare: @exchange_no_declare
         }
         @bunny_exchange = Bunny::Exchange.new(channel, @exchange_type, @exchange, exchange_options)
         if @exchange_to_bind
@@ -138,6 +141,7 @@ module Fluent::Plugin
         durable: @durable,
         exclusive: @exclusive,
         auto_delete: @auto_delete,
+        no_declare: @queue_no_declare,
         arguments: queue_arguments
       )
       if @exchange
