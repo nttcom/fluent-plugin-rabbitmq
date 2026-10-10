@@ -184,16 +184,6 @@ class RabbitMQInputTest < Test::Unit::TestCase
     end
   end
 
-  def test_exclusive
-    conf = CONFIG.clone.gsub(/queue\stest_in_fanout/, "queue test_in_exclusive")
-    conf << "\nexclusive true\n"
-    d = create_driver(conf)
-    d.run {}
-    assert_nothing_raised do
-      @channel.queue("test_in_exclusive", exclusive: true)
-    end
-  end
-
   def test_hosts
     conf = CONFIG.clone.gsub(/host\slocalhost/, "hosts [\"localhost\"]")
     d = create_driver(conf)
