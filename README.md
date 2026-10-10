@@ -47,6 +47,7 @@ fluentd >= 0.14.0
 |durable|true|false|set durable flag of the queue|
 |exclusive|true|false|set exclusive flag of the queue|
 |auto_delete|true|false|set auto_delete flag of the queue|
+|queue_no_declare|true|false|passive declare option for queue|
 |ttl|60000|nil|queue ttl in ms|
 |prefetch_count|10|nil||
 |consumer_pool_size|5|nil||

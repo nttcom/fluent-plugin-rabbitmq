@@ -184,6 +184,24 @@ class RabbitMQInputTest < Test::Unit::TestCase
     end
   end
 
+  def test_queue_no_declare
+    @channel.queue("test_in_no_declare", durable: true)
+    conf = CONFIG.clone.gsub(/queue\stest_in_fanout/, "queue test_in_no_declare")
+    conf << "\nqueue_no_declare true\n"
+    d = create_driver(conf)
+    assert_equal true, d.instance.queue_no_declare
+    d.run {}
+  end
+
+  def test_exchange_no_declare
+    exchange = Bunny::Exchange.new(@channel, "topic", "test_in_exchange_no_declare", durable: true)
+    conf = CONFIG.clone.gsub(/queue\stest_in_fanout/, "queue test_in_exchange_no_declare_queue")
+    conf << "\ncreate_exchange true\nexchange test_in_exchange_no_declare\nexchange_type topic\nexchange_durable true\nexchange_no_declare true\n"
+    d = create_driver(conf)
+    assert_equal true, d.instance.exchange_no_declare
+    d.run {}
+  end
+
   def test_hosts
     conf = CONFIG.clone.gsub(/host\slocalhost/, "hosts [\"localhost\"]")
     d = create_driver(conf)
