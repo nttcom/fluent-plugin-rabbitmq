@@ -316,9 +316,10 @@ class RabbitMQInputTest < Test::Unit::TestCase
     d = create_driver(conf)
 
     hash = {"foo" => "bar"}
+    timestamp = Time.now.to_i
 
     d.run(expect_emits: 1) do
-      @fanout_exchange.publish(hash.to_json, content_type: "application/json", content_encoding: "gzip", message_id: "msg-1", priority: 5, correlation_id: "corr-1")
+      @fanout_exchange.publish(hash.to_json, content_type: "application/json", content_encoding: "gzip", message_id: "msg-1", priority: 5, correlation_id: "corr-1", timestamp: timestamp)
     end
 
     d.events.each do |event|
@@ -328,6 +329,7 @@ class RabbitMQInputTest < Test::Unit::TestCase
       assert_equal "msg-1", event[2]["properties"]["message_id"]
       assert_equal 5, event[2]["properties"]["priority"]
       assert_equal "corr-1", event[2]["properties"]["correlation_id"]
+      assert_equal timestamp, event[2]["properties"]["timestamp"]
     end
   end
 

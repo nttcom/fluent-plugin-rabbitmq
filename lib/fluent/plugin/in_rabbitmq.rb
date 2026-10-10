@@ -168,7 +168,7 @@ module Fluent::Plugin
                 "reply_to"         => properties[:reply_to],
                 "expiration"       => properties[:expiration],
                 "message_id"       => properties[:message_id],
-                "timestamp"        => properties[:timestamp],
+                "timestamp"        => properties[:timestamp] ? properties[:timestamp].to_i : nil,
                 "type"             => properties[:type],
                 "user_id"          => properties[:user_id],
                 "app_id"           => properties[:app_id],
