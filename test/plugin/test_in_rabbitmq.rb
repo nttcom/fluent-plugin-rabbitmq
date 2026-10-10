@@ -310,6 +310,45 @@ class RabbitMQInputTest < Test::Unit::TestCase
     end
   end
 
+  def test_include_properties
+    conf = CONFIG.clone
+    conf << "\ninclude_properties true\n"
+    d = create_driver(conf)
+
+    hash = {"foo" => "bar"}
+    timestamp = Time.now.to_i
+
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish(hash.to_json, content_type: "application/json", content_encoding: "gzip", message_id: "msg-1", priority: 5, correlation_id: "corr-1", timestamp: timestamp)
+    end
+
+    d.events.each do |event|
+      assert_equal hash["foo"], event[2]["foo"]
+      assert_equal "application/json", event[2]["properties"]["content_type"]
+      assert_equal "gzip", event[2]["properties"]["content_encoding"]
+      assert_equal "msg-1", event[2]["properties"]["message_id"]
+      assert_equal 5, event[2]["properties"]["priority"]
+      assert_equal "corr-1", event[2]["properties"]["correlation_id"]
+      assert_equal timestamp, event[2]["properties"]["timestamp"]
+    end
+  end
+
+  def test_properties_key
+    conf = CONFIG.clone
+    conf << "\ninclude_properties true\nproperties_key test\n"
+    d = create_driver(conf)
+
+    hash = {"foo" => "bar"}
+
+    d.run(expect_emits: 1) do
+      @fanout_exchange.publish(hash.to_json, content_type: "application/json")
+    end
+
+    d.events.each do |event|
+      assert_equal "application/json", event[2]["test"]["content_type"]
+    end
+  end
+
   def test_include_delivery_info
     conf = CONFIG.clone.gsub(/queue\stest_in_fanout/, "queue test_in_topic")
     conf << "\ninclude_delivery_info true\n"

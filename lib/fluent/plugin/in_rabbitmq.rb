@@ -69,8 +69,10 @@ module Fluent::Plugin
 
     config_param :include_headers, :bool, default: false
     config_param :include_delivery_info, :bool, default: false
+    config_param :include_properties, :bool, default: false
     config_param :headers_key, :string, default: "headers"
     config_param :delivery_info_key, :string, default: "delivery_info"
+    config_param :properties_key, :string, default: "properties"
     config_param :manual_ack, :bool, default: false
     config_param :queue_mode, :string, default: nil
     config_param :queue_type, :string, default: nil
@@ -155,6 +157,23 @@ module Fluent::Plugin
             end
             if @include_delivery_info
               record[@delivery_info_key] = delivery_info
+            end
+            if @include_properties
+              record[@properties_key] = {
+                "content_type"     => properties[:content_type],
+                "content_encoding" => properties[:content_encoding],
+                "delivery_mode"    => properties[:delivery_mode],
+                "priority"         => properties[:priority],
+                "correlation_id"   => properties[:correlation_id],
+                "reply_to"         => properties[:reply_to],
+                "expiration"       => properties[:expiration],
+                "message_id"       => properties[:message_id],
+                "timestamp"        => properties[:timestamp] ? properties[:timestamp].to_i : nil,
+                "type"             => properties[:type],
+                "user_id"          => properties[:user_id],
+                "app_id"           => properties[:app_id],
+                "cluster_id"       => properties[:cluster_id]
+              }
             end
             router.emit(@tag, time, record)
           end
