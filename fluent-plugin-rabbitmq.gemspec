@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "ltsv"
   spec.add_development_dependency "msgpack"
 
-  spec.add_runtime_dependency "fluentd", ">= 1.0.0"
+  spec.add_runtime_dependency "fluentd", ">= 1.0"
 
-  spec.add_dependency "bunny", "~> 2.14.4"
+  spec.add_dependency "bunny", "~> 3.4"
 end
