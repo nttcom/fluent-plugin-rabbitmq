@@ -52,6 +52,8 @@ fluentd >= 0.14.0
 |consumer_pool_size|5|nil||
 |include_headers|true|false|include headers in events|
 |headers_key|string|header|key name of headers|
+|include_properties|true|false|include AMQP basic properties in events|
+|properties_key|string|properties|key name of properties|
 |create_exchange|true|false|create exchange or not|
 |exchange_to_bind|string|nil|exchange to bind created exchange|
 |exchange_type|direct|topic|type of created exchange|
