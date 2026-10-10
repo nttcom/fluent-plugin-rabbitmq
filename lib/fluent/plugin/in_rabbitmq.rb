@@ -162,7 +162,6 @@ module Fluent::Plugin
               record[@properties_key] = {
                 "content_type"     => properties[:content_type],
                 "content_encoding" => properties[:content_encoding],
-                "headers"          => properties[:headers],
                 "delivery_mode"    => properties[:delivery_mode],
                 "priority"         => properties[:priority],
                 "correlation_id"   => properties[:correlation_id],
