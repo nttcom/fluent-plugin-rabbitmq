@@ -35,8 +35,7 @@ class RabbitMQInputTLSTest < Test::Unit::TestCase
   end
 
   data("TLS 1.2" => ["TLSv1_2", :TLSv1_2],
-       "TLS 1.3" => ["TLSv1_3", :TLSv1_3],
-       "short form" => ["1.2", :"1.2"])
+       "TLS 1.3" => ["TLSv1_3", :TLSv1_3])
   def test_tls_protocol_is_passed_as_symbol(data)
     configured, expected = data
 

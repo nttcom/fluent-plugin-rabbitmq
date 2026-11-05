@@ -113,7 +113,7 @@ tls_cert /path/to/cert
 tls_key /path/to/key
 tls_ca_certificates ["/path/to/ca_certificate"]
 verify_peer true
-tls_protocol TLSv1_3 # pin a TLS version instead of negotiating, e.g. TLSv1_2 or TLSv1_3
+tls_protocol TLSv1_3 # Bunny TLS protocol symbol as a string, e.g. TLSv1_2 or TLSv1_3
 tls_silence_warnings false # suppress Bunny's warnings about a missing client certificate and disabled peer verification
 ```
 
@@ -130,4 +130,3 @@ tls_silence_warnings false # suppress Bunny's warnings about a missing client ce
 ## License
 
 The gem is available as open source under the terms of the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
-
