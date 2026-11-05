@@ -48,6 +48,8 @@ module Fluent::Plugin
     config_param :tls_key, :string, default: nil
     config_param :tls_ca_certificates, :array, default: nil
     config_param :verify_peer, :bool, default: true
+    config_param :tls_protocol, :string, default: nil
+    config_param :tls_silence_warnings, :bool, default: nil
 
     config_param :exchange, :string
     config_param :exchange_type, :string
@@ -96,6 +98,9 @@ module Fluent::Plugin
       bunny_options[:tls_key] = @tls_key if @tls_key
       bunny_options[:tls_ca_certificates] = @tls_ca_certificates if @tls_ca_certificates
       bunny_options[:verify_peer] = @verify_peer
+      # Bunny resolves the version against a table keyed by symbols, e.g. :TLSv1_3
+      bunny_options[:tls_protocol] = @tls_protocol.to_sym if @tls_protocol
+      bunny_options[:tls_silence_warnings] = @tls_silence_warnings unless @tls_silence_warnings.nil?
 
       @bunny = Bunny.new(bunny_options)
 
